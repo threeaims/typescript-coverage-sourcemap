@@ -12,6 +12,7 @@ This project demonstrates how to set up a TypeScript 2.0 project with the follow
 * Separate source and build directories
 * Watch for changes
 * Linting that doesn't fail the build
+* HTML report in the `coverage/remapped/html` directory
 
 The benefit of this approach is that you are actually testing the generated
 code, and just getting the report based on the original lines.
@@ -93,3 +94,43 @@ npm run watch
 ```
 
 This will re-run the coverage check on every change.
+
+
+Caution:
+ 
+If you have any `.ts` files that compile to empty `.js` files (for example if
+they contain only interfaces), then a sourcemap won't be generated for them,
+and remap-istanbul will complain like this when it tries to map them back:
+
+```
+path.js:7
+    throw new TypeError('Path must be a string. Received ' + inspect(path));
+    ^
+
+TypeError: Path must be a string. Received undefined
+    at assertPath (path.js:7:11)
+    at Object.extname (path.js:1431:5)
+    at /Users/jgardner/repo/api/node_modules/remap-istanbul/lib/remap.js:289:14
+    at Array.forEach (native)
+    at /Users/jgardner/repo/api/node_modules/remap-istanbul/lib/remap.js:215:22
+    at Array.forEach (native)
+    at remap (/Users/jgardner/repo/api/node_modules/remap-istanbul/lib/remap.js:213:12)
+    at DestroyableTransform._transform (/Users/jgardner/repo/api/node_modules/remap-istanbul/lib/gulpRemapIstanbul.js:41:20)
+    at DestroyableTransform.Transform._read (/Users/jgardner/repo/api/node_modules/remap-istanbul/node_modules/readable-stream/lib/_stream_transform.js:159:10)
+    at DestroyableTransform.Transform._write (/Users/jgardner/repo/api/node_modules/remap-istanbul/node_modules/readable-stream/lib/_stream_transform.js:147:83)
+```
+
+It would be nice if remap-istanbul gave a nicer error, but a good solution is
+to rename the offending file from `.ts` to `.d.ts` so that it is correctly
+treated a TypeScript definition file (which it is) rather than as code to
+convert to JavaScript.
+
+A slightly more hacky workaround is to add something like this to every file
+that compiles to an empty `.js` file so that it isn't empty any more:
+
+```
+export const one = 1;
+```
+
+Then make sure you import and use the constant somewhere in the rest of the
+project.

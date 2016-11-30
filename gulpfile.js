@@ -20,7 +20,7 @@ gulp.task("tslint", function() {
     .pipe(tslint.report({
         // Remove this if you want to fail the build on lint error
         emitError: false
-    }))
+    }));
 });
 
 gulp.task("clean", () => {
@@ -37,25 +37,35 @@ gulp.task("build", ["clean"], function() {
 });
 
 gulp.task("pre-test", ["build"], function () {
-  return gulp.src(["build/**/*.js"])
+    return gulp.src(["build/**/*.js"])
     .pipe(istanbul({includeUntested: true}))
     .pipe(istanbul.hookRequire());
 });
 
 gulp.task("test", ["pre-test"], function() {
-     return gulp.src("./build/**/*.spec.js", { base: "." })
-     .pipe(jasmine({verbose: true}))
-     .pipe(istanbul.writeReports({
-         reporters: [ "json" ] // Create the non-sourcemapped coverage-final.json file to use in coverage
-     }))
-     .pipe(istanbul.enforceThresholds({ thresholds: { global: 10 } }));
+    return gulp.src("./build/**/*.spec.js", { base: "." })
+    .pipe(jasmine({verbose: true}))
+    .pipe(istanbul.writeReports({
+        reporters: [ "json" ] // Create the non-sourcemapped coverage-final.json file to use in coverage
+    }))
+    .pipe(istanbul.enforceThresholds({ thresholds: { global: 10 } }));
 });
 
 gulp.task("coverage", ["test"], function () {
     return gulp.src("./coverage/coverage-final.json")
-        .pipe(remapIstanbul())
-        .pipe(gulp.dest("./coverage/remapped"))
-        .pipe(istanbulReport());
+    .pipe(remapIstanbul({basePath: "src"}))
+    .pipe(gulp.dest("./coverage/remapped"))
+    .pipe(istanbulReport({
+        reporters: [
+            {"name": "text"}
+        ]
+    }))
+    .pipe(istanbulReport({
+        reporters: [
+            {"name": "html", "dir": "./coverage/remapped/html"},
+        ]
+    }))
+    .on('end', function() { console.log("HTML coverage report is at ./coverage/remapped/html/index.html"); })
 });
 
 gulp.task("watch", ["coverage"], function() {
