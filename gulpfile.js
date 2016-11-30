@@ -28,7 +28,7 @@ gulp.task("clean", () => {
     .pipe(clean());
 });
 
-gulp.task("build", ["clean"], function() {
+gulp.task("build", function() {
     return gulp.src("./src/**/*.ts")
     .pipe(sourcemaps.init())
     .pipe(ts())
@@ -37,7 +37,9 @@ gulp.task("build", ["clean"], function() {
 });
 
 gulp.task("pre-test", ["build"], function () {
-    return gulp.src(["build/**/*.js"])
+    return gulp.src(["build/**/*.js", "!build/**/*.spec.js"])
+    // Change the above line to this if you want to report coverage in the spec files themselves:
+    // return gulp.src(["build/**/*.js"])
     .pipe(istanbul({includeUntested: true}))
     .pipe(istanbul.hookRequire());
 });
@@ -65,7 +67,7 @@ gulp.task("coverage", ["test"], function () {
             {"name": "html", "dir": "./coverage/remapped/html"},
         ]
     }))
-    .on('end', function() { console.log("HTML coverage report is at ./coverage/remapped/html/index.html"); })
+    .on("end", function() { console.log("HTML coverage report is at ./coverage/remapped/html/index.html"); })
 });
 
 gulp.task("watch", ["coverage"], function() {

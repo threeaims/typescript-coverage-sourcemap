@@ -24,7 +24,7 @@ npm install
 time npm test
 ```
 
-You should see something a bit like this but with prettier colours: 
+You should see something a bit like this but with prettier colours:
 
 ```
 > coverage@1.0.0 test ./
@@ -50,16 +50,16 @@ one
 Finished in 0 seconds
 [16:00:13] Finished 'test' after 45 ms
 [16:00:13] Starting 'coverage'...
---------------|----------|----------|----------|----------|----------------|
-File          |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
---------------|----------|----------|----------|----------|----------------|
- one/         |     87.5 |       50 |      100 |     87.5 |                |
-  one.spec.ts |      100 |      100 |      100 |      100 |                |
-  one.ts      |    66.67 |       50 |      100 |    66.67 |              4 |
---------------|----------|----------|----------|----------|----------------|
-All files     |     87.5 |       50 |      100 |     87.5 |                |
---------------|----------|----------|----------|----------|----------------|
+----------|----------|----------|----------|----------|----------------|
+File      |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+----------|----------|----------|----------|----------|----------------|
+ one/     |    66.67 |       50 |      100 |    66.67 |                |
+  one.ts  |    66.67 |       50 |      100 |    66.67 |              4 |
+----------|----------|----------|----------|----------|----------------|
+All files |    66.67 |       50 |      100 |    66.67 |                |
+----------|----------|----------|----------|----------|----------------|
 
+HTML coverage report is at ./coverage/remapped/html/index.html
 [16:00:13] Finished 'coverage' after 20 ms
 [16:00:13] Starting 'default'...
 [16:00:13] Finished 'default' after 3.66 μs
@@ -97,7 +97,7 @@ This will re-run the coverage check on every change.
 
 
 Caution:
- 
+
 If you have any `.ts` files that compile to empty `.js` files (for example if
 they contain only interfaces), then a sourcemap won't be generated for them,
 and remap-istanbul will complain like this when it tries to map them back:
@@ -134,3 +134,28 @@ export const one = 1;
 
 Then make sure you import and use the constant somewhere in the rest of the
 project.
+
+Another problem that can occur is if you copy `.js` files into the `build`
+directory for some other purpose (such as to serve to the browser as part of a
+front end). If you do this you'll need to exclude these paths, otherwise you'll
+see the coverage check fail even though the tests have passed:
+
+```
+11 specs, 0 failures
+Finished in 0.7 seconds
+[18:39:45] 'test' errored after 1.56 s
+[18:39:45] Error in plugin 'gulp-istanbul'
+Message:
+    Coverage failed
+```
+
+Here's an example that excludes all front-end files in the `build/static`
+directory from the coverage check:
+
+```
+gulp.task("pre-test", ["build"], function () {
+    return gulp.src(["build/**/*.js", "!build/**/*.spec.js", "!build/static/*.js", "!build/static/**/*.js"])
+    .pipe(istanbul({includeUntested: true}))
+    .pipe(istanbul.hookRequire());
+});
+```

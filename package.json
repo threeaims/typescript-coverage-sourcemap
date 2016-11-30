@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "gulp",
+    "clean": "gulp clean",
+    "test": "gulp clean && gulp",
     "watch": "gulp watch"
   },
   "author": "",
