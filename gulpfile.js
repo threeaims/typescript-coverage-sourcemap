@@ -6,6 +6,22 @@ const jasmine = require("gulp-jasmine");
 const remapIstanbul = require("remap-istanbul/lib/gulpRemapIstanbul");
 const sourcemaps = require("gulp-sourcemaps");
 const ts = require("gulp-typescript");
+const tslint = require("gulp-tslint");
+
+gulp.task("tslint", function() {
+    gulp.src("./src/**/*.ts")
+    .pipe(tslint({
+        formatter: "verbose",
+        extends: "tslint:latest",
+        rules: {
+            "no-console": [false]
+        }
+    }))
+    .pipe(tslint.report({
+        // Remove this if you want to fail the build on lint error
+        emitError: false
+    }))
+});
 
 gulp.task("clean", () => {
     return gulp.src(["./coverage", "./build"])
@@ -43,7 +59,7 @@ gulp.task("coverage", ["test"], function () {
 });
 
 gulp.task("watch", ["coverage"], function() {
-    gulp.watch("src/**/*.ts", ["coverage"]);
+    gulp.watch("src/**/*.ts", ["coverage", "tslint"]);
 });
 
-gulp.task("default", ["coverage"]);
+gulp.task("default", ["coverage", "tslint"]);
