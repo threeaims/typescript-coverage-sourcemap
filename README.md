@@ -7,9 +7,10 @@ This project demonstrates how to set up a TypeScript 2.0 project with the follow
 * Source map support
 * Istanbul remap on the genreated coverage file
 * Coverage report that refers back to lines in the original `.ts` files
-* Inforce a minimum coverage level (the rather low 10% in this case)
+* Enforce a minimum coverage level (the rather low 10% in this case)
 * Don't need a tsconfig.json (configuration is in gulp)
 * Separate source and build directories
+* Watch for changes
 
 The benefit of this approach is that you are actually testing the generated
 code, and just getting the report based on the original lines.
@@ -61,3 +62,11 @@ real	0m2.684s
 user	0m2.686s
 sys	0m0.264s
 ```
+
+To watch for changes you can run:
+
+```
+npm run watch
+```
+
+This will re-run the coverage check on every change.

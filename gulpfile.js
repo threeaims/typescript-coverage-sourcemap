@@ -1,7 +1,7 @@
 const clean = require("gulp-clean");
 const gulp = require("gulp");
 const istanbul = require("gulp-istanbul");
-const istanbulReport = require('gulp-istanbul-report');
+const istanbulReport = require("gulp-istanbul-report");
 const jasmine = require("gulp-jasmine");
 const remapIstanbul = require("remap-istanbul/lib/gulpRemapIstanbul");
 const sourcemaps = require("gulp-sourcemaps");
@@ -40,6 +40,10 @@ gulp.task("coverage", ["test"], function () {
         .pipe(remapIstanbul())
         .pipe(gulp.dest("./coverage/remapped"))
         .pipe(istanbulReport());
+});
+
+gulp.task("watch", ["coverage"], function() {
+    gulp.watch("src/**/*.ts", ["coverage"]);
 });
 
 gulp.task("default", ["coverage"]);
