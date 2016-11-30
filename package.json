@@ -1,6 +1,6 @@
 {
-  "name": "coverage",
-  "version": "1.0.0",
+  "name": "typescript-coverage-sourcemap",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
