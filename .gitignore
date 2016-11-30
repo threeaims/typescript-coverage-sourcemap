@@ -1,0 +1,4 @@
+*.sw[po]
+build
+coverage
+node_modules
