@@ -13,6 +13,7 @@ This project demonstrates how to set up a TypeScript 2.0 project with the follow
 * Watch for changes
 * Linting that doesn't fail the build
 * HTML report in the `coverage/remapped/html` directory
+* Separate test and coverage runs from the same build (so you can have separate unit and end to end tests)
 
 The benefit of this approach is that you are actually testing the generated
 code, and just getting the report based on the original lines.
@@ -27,63 +28,82 @@ time npm test
 You should see something a bit like this but with prettier colours:
 
 ```
-> coverage@1.0.0 test ./
-> gulp
+> typescript-coverage-sourcemap@0.1.0 test /Users/jgardner/repo/coverage
+> gulp clean && gulp
 
-[16:00:12] Using gulpfile ./gulpfile.js
-[16:00:12] Starting 'clean'...
-[16:00:12] Starting 'tslint'...
-[16:00:12] Finished 'tslint' after 1.91 ms
+[12:02:16] Using gulpfile ~/repo/coverage/gulpfile.js
+[12:02:16] Starting 'clean'...
+[12:02:16] Finished 'clean' after 30 ms
+[12:02:17] Using gulpfile ~/repo/coverage/gulpfile.js
+[12:02:17] Starting 'coverage-all'...
+[12:02:17] Starting 'build'...
+[12:02:17] Starting 'tslint'...
+[12:02:17] Finished 'tslint' after 2.27 ms
+(quotemark) e2e.spec.ts[5, 21]: ' should be "
+
 (quotemark) one/one.spec.ts[1, 21]: ' should be "
 
-[16:00:12] Starting 'pre-test'...
-[16:00:12] Finished 'pre-test' after 49 ms
-[16:00:12] Finished 'clean' after 62 ms
-[16:00:12] Starting 'build'...
-[16:00:13] Finished 'build' after 1.14 s
-[16:00:13] Starting 'test'...
+[12:02:18] Finished 'build' after 1.26 s
+[12:02:18] Starting 'pre-test-unit'...
+[12:02:18] Finished 'pre-test-unit' after 23 ms
+[12:02:18] Starting 'test-unit'...
 Running 1 spec.
 one
     passes: passed
 
 1 spec, 0 failures
 Finished in 0 seconds
-[16:00:13] Finished 'test' after 45 ms
-[16:00:13] Starting 'coverage'...
+[12:02:18] Finished 'test-unit' after 40 ms
+[12:02:18] Starting 'coverage-unit'...
 ----------|----------|----------|----------|----------|----------------|
 File      |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 ----------|----------|----------|----------|----------|----------------|
- one/     |    66.67 |       50 |      100 |    66.67 |                |
+ src/     |        0 |        0 |      100 |        0 |                |
+  e2e.ts  |        0 |        0 |      100 |        0 |          1,3,4 |
+ src/one/ |    66.67 |       50 |      100 |    66.67 |                |
   one.ts  |    66.67 |       50 |      100 |    66.67 |              4 |
 ----------|----------|----------|----------|----------|----------------|
-All files |    66.67 |       50 |      100 |    66.67 |                |
+All files |    33.33 |       25 |      100 |    33.33 |                |
 ----------|----------|----------|----------|----------|----------------|
 
-HTML coverage report is at ./coverage/remapped/html/index.html
-[16:00:13] Finished 'coverage' after 20 ms
-[16:00:13] Starting 'default'...
-[16:00:13] Finished 'default' after 3.66 μs
+HTML coverage report is at coverage-unit/remapped/html/index.html
+[12:02:18] Finished 'coverage-unit' after 56 ms
+[12:02:18] Starting 'pre-test-e2e'...
+[12:02:18] Finished 'pre-test-e2e' after 5.1 ms
+[12:02:18] Starting 'test-e2e'...
+Running 1 spec.
+e2e
+    passes: passed
 
-real	0m2.684s
-user	0m2.686s
-sys	0m0.264s
+1 spec, 0 failures
+Finished in 0 seconds
+[12:02:18] Finished 'test-e2e' after 5.78 ms
+[12:02:18] Starting 'coverage-e2e'...
+----------|----------|----------|----------|----------|----------------|
+File      |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+----------|----------|----------|----------|----------|----------------|
+ src/     |    66.67 |       50 |      100 |    66.67 |                |
+  e2e.ts  |    66.67 |       50 |      100 |    66.67 |              4 |
+ src/one/ |        0 |        0 |      100 |        0 |                |
+  one.ts  |        0 |        0 |      100 |        0 |          1,3,4 |
+----------|----------|----------|----------|----------|----------------|
+All files |    33.33 |       25 |      100 |    33.33 |                |
+----------|----------|----------|----------|----------|----------------|
+
+HTML coverage report is at coverage-e2e/remapped/html/index.html
+[12:02:18] Finished 'coverage-e2e' after 9.66 ms
+[12:02:18] Finished 'coverage-all' after 1.4 s
+[12:02:18] Starting 'default'...
+[12:02:18] Finished 'default' after 2.85 μs
 ```
 
-Notice the lint warning:
+Notice the lint warnings:
 
 ```
 (quotemark) one/one.spec.ts[1, 21]: ' should be "
 ```
 
-and the uncovered line:
-
-```
-...
-File          |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
-...
-  one.ts      |    66.67 |       50 |      100 |    66.67 |              4 |
-...
-```
+and the uncovered lines.
 
 As an excercise you could try fixing these and running again.
 
@@ -93,7 +113,8 @@ To watch for changes you can run:
 npm run watch
 ```
 
-This will re-run the coverage check on every change.
+This will re-run the coverage check on every change (it uses a gulp watch which
+TypeScript supports so not everything needs re-scanning).
 
 
 Caution:
@@ -154,7 +175,7 @@ directory from the coverage check:
 
 ```
 gulp.task("pre-test", ["build"], function () {
-    return gulp.src(["build/**/*.js", "!build/**/*.spec.js", "!build/static/*.js", "!build/static/**/*.js"])
+    return gulp.src(["build/**/*.js", "!build/*.spec.js", "!build/**/*.spec.js", "!build/static/*.js", "!build/static/**/*.js"])
     .pipe(istanbul({includeUntested: true}))
     .pipe(istanbul.hookRequire());
 });

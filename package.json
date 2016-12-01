@@ -6,6 +6,8 @@
   "scripts": {
     "clean": "gulp clean",
     "test": "gulp clean && gulp",
+    "test-e2e": "gulp coverage-e2e",
+    "test-unit": "gulp coverage-unit",
     "watch": "gulp watch"
   },
   "author": "",
@@ -23,6 +25,7 @@
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.2",
     "remap-istanbul": "^0.7.0",
+    "run-sequence": "^1.2.2",
     "tslint": "^4.0.2",
     "typescript": "^2.0.10"
   }

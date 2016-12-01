@@ -1,4 +1,5 @@
 *.sw[po]
 build
-coverage
+coverage-e2e
+coverage-unit
 node_modules
