@@ -14,9 +14,11 @@ gulp.task("tslint", function() {
     gulp.src("src/**/*.ts")
     .pipe(tslint({
         formatter: "verbose",
-        extends: "tslint:latest",
-        rules: {
-            "no-console": [false]
+        configuration: {
+            rules: {
+                "no-string-literal": false,
+                "no-console": [false],
+            }
         }
     }))
     .pipe(tslint.report({
