@@ -69,12 +69,8 @@ gulp.task("coverage-unit", ["test-unit"], function () {
     .pipe(gulp.dest("coverage-unit/remapped"))
     .pipe(istanbulReport({
         reporters: [
-            {"name": "text"}
-        ]
-    }))
-    .pipe(istanbulReport({
-        reporters: [
-            {"name": "html", "dir": "coverage-unit/remapped/html"},
+            {"name": "text"},
+            {"name": "html", "dir": "coverage-unit/remapped/html"}
         ]
     }))
     .on("end", function() {
@@ -89,7 +85,7 @@ gulp.task("pre-test-e2e", function () {
 });
 
 gulp.task("test-e2e", ["pre-test-e2e"], function() {
-    return gulp.src("build/*.spec.js", { base: "." })
+    return gulp.src("build/e2e.spec.js", { base: "." })
     .pipe(jasmine({verbose: true}))
     .pipe(istanbul.writeReports({
         reportOpts: { dir: "coverage-e2e" },
@@ -104,12 +100,8 @@ gulp.task("coverage-e2e", ["test-e2e"], function () {
     .pipe(gulp.dest("coverage-e2e/remapped"))
     .pipe(istanbulReport({
         reporters: [
-            {"name": "text"}
-        ]
-    }))
-    .pipe(istanbulReport({
-        reporters: [
-            {"name": "html", "dir": "coverage-e2e/remapped/html"},
+            {"name": "text"},
+            {"name": "html", "dir": "coverage-e2e/remapped/html"}
         ]
     }))
     .on("end", function() {
