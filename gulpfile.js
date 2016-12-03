@@ -11,18 +11,15 @@ const tslint = require("gulp-tslint");
 
 
 gulp.task("tslint", function() {
-    gulp.src("src/**/*.ts")
+    gulp.src(["src/*.ts", "src/**/*.ts"])
     .pipe(tslint({
-        formatter: "verbose",
-        configuration: {
-            rules: {
-                "no-string-literal": false,
-                "no-console": [false],
-            }
-        }
+        // Specifying config directly here doesn't seem to work,
+        // only leaving this empty or specifying a file works
+        configuration: "tslint.json",
+        formatter: "verbose"
     }))
     .pipe(tslint.report({
-        // Remove this if you want to fail the build on lint error
+        // Remove this to make tests fail on lint errors
         emitError: false
     }));
 });
