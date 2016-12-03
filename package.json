@@ -6,6 +6,7 @@
   "scripts": {
     "clean": "gulp clean",
     "test": "gulp clean && gulp",
+    "build": "gulp build",
     "test-e2e": "gulp coverage-e2e",
     "test-unit": "gulp coverage-unit",
     "watch": "gulp watch"
